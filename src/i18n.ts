@@ -36,7 +36,7 @@ const messages: Record<Lang, Dict> = {
     "action.splat": "Splat",
     "action.clear": "Clear",
     "action.reset": "Reset",
-    hint: "Drag on the canvas to inject liquid. Gravity makes it fall and pool; empty space is air and doesn't dissolve it. The edges are walls already: use the Eraser to open gaps in them, or draw new obstacles with Wall. {menu} hides the panel.",
+    hint: "Drag on the canvas to inject liquid. Gravity makes it fall and pool; empty space is air and doesn't dissolve it. The edges are walls already: use the Eraser to open gaps in them, or draw new obstacles with Wall. {menu} shows the panel.",
     "aria.togglePanel": "Show/hide controls",
     "aria.collapsePanel": "Collapse panel",
     "unsupported.title": "Oops, incompatible GPU",
@@ -82,7 +82,7 @@ const messages: Record<Lang, Dict> = {
     "action.splat": "Splat",
     "action.clear": "Limpar",
     "action.reset": "Reset",
-    hint: "Arraste no canvas para injetar líquido. A gravidade o faz cair e empoçar; o espaço vazio é ar e não o dissolve. As bordas já são paredes: use a Borracha para abrir passagens nelas ou desenhe novos obstáculos com Parede. {menu} recolhe o painel.",
+    hint: "Arraste no canvas para injetar líquido. A gravidade o faz cair e empoçar; o espaço vazio é ar e não o dissolve. As bordas já são paredes: use a Borracha para abrir passagens nelas ou desenhe novos obstáculos com Parede. {menu} exibe o painel.",
     "aria.togglePanel": "Mostrar/ocultar controles",
     "aria.collapsePanel": "Recolher painel",
     "unsupported.title": "Ops, GPU incompatível",
@@ -128,7 +128,7 @@ const messages: Record<Lang, Dict> = {
     "action.splat": "Splat",
     "action.clear": "Limpiar",
     "action.reset": "Reiniciar",
-    hint: "Arrastra en el lienzo para inyectar líquido. La gravedad lo hace caer y acumularse; el espacio vacío es aire y no lo disuelve. Los bordes ya son paredes: usa el Borrador para abrir huecos en ellas o dibuja nuevos obstáculos con Pared. {menu} oculta el panel.",
+    hint: "Arrastra en el lienzo para inyectar líquido. La gravedad lo hace caer y acumularse; el espacio vacío es aire y no lo disuelve. Los bordes ya son paredes: usa el Borrador para abrir huecos en ellas o dibuja nuevos obstáculos con Pared. {menu} muestra el panel.",
     "aria.togglePanel": "Mostrar/ocultar controles",
     "aria.collapsePanel": "Ocultar panel",
     "unsupported.title": "Ups, GPU incompatible",
@@ -157,15 +157,31 @@ const listeners = new Set<() => void>();
 let current: Lang = initialLang();
 document.documentElement.lang = current;
 
-// padrão é en-US; só usa outro idioma se o usuário já tiver escolhido um antes
+// preferência salva tem prioridade; senão herda o idioma do sistema; senão en-US
 function initialLang(): Lang {
   try {
     const saved = localStorage.getItem("lang");
     if (saved && saved in messages) return saved as Lang;
   } catch {
-    // localStorage pode estar bloqueado; segue com o padrão
+    // localStorage pode estar bloqueado; segue para o idioma do sistema
   }
-  return DEFAULT_LANG;
+  return systemLang() ?? DEFAULT_LANG;
+}
+
+function systemLang(): Lang | null {
+  const prefs = navigator.languages?.length
+    ? navigator.languages
+    : [navigator.language];
+  for (const pref of prefs) {
+    if (!pref) continue;
+    if (pref in messages) return pref as Lang;
+    const base = pref.split("-")[0].toLowerCase();
+    const match = (Object.keys(messages) as Lang[]).find(
+      (code) => code.split("-")[0].toLowerCase() === base
+    );
+    if (match) return match;
+  }
+  return null;
 }
 
 export function getLang(): Lang {
