@@ -1,8 +1,20 @@
 import { PRESETS, hsvToRgb } from "./presets";
+import { LANGS, getLang, onLangChange, setLang, t } from "./i18n";
 import type { Config, Preset, Tool } from "./types";
 import IconWater from "~icons/mdi/water";
 import IconWall from "~icons/mdi/wall";
 import IconEraser from "~icons/mdi/eraser";
+import FlagUS from "~icons/circle-flags/us";
+import FlagBR from "~icons/circle-flags/br";
+import FlagES from "~icons/circle-flags/es";
+import type { Lang } from "./i18n";
+
+// bandeira (SVG do unplugin) por idioma
+const FLAGS: Record<Lang, string> = {
+  "en-US": FlagUS,
+  "pt-BR": FlagBR,
+  es: FlagES,
+};
 import IconDice from "~icons/mdi/dice-multiple";
 import IconClear from "~icons/mdi/auto-fix";
 import IconReset from "~icons/mdi/refresh";
@@ -31,6 +43,8 @@ export class UI {
     this.cb = cb;
     this.build();
     this.setupToggle();
+    // trocar de idioma redesenha o painel inteiro com os novos textos
+    onLangChange(() => this.rebuild());
   }
 
   private el<K extends keyof HTMLElementTagNameMap>(
@@ -64,18 +78,15 @@ export class UI {
     const panel = document.getElementById("panel")!;
     panel.innerHTML = "";
 
-    const title = this.el("h2", undefined, "Fluid Sandbox");
-    const subtitle = this.el(
-      "p",
-      "subtitle",
-      "Simulação de fluidos em GPU · WebGL2"
-    );
+    const title = this.el("h2", undefined, t("title"));
+    const subtitle = this.el("p", "subtitle", t("subtitle"));
     panel.appendChild(title);
     panel.appendChild(subtitle);
 
     // presets
-    const presetSec = this.section("Fluido");
+    const presetSec = this.section(t("section.fluid"));
     const presetGrid = this.el("div", "grid cols-2");
+    this.presetButtons.clear();
     for (const preset of PRESETS) {
       const btn = this.el("button", "preset-btn") as HTMLButtonElement;
       const dot = this.el("span", "dot");
@@ -84,7 +95,7 @@ export class UI {
       dot.style.color = cssColor;
       dot.style.background = cssColor;
       btn.appendChild(dot);
-      btn.appendChild(document.createTextNode(preset.name));
+      btn.appendChild(document.createTextNode(t("preset." + preset.id)));
       btn.addEventListener("click", () => {
         this.cb.onPreset(preset);
         this.refreshPresetButtons();
@@ -96,15 +107,16 @@ export class UI {
     panel.appendChild(presetSec);
 
     // ferramentas
-    const toolSec = this.section("Ferramenta");
+    const toolSec = this.section(t("section.tool"));
     const toolGrid = this.el("div", "grid cols-2");
-    const tools: { tool: Tool; label: string; icon: string }[] = [
-      { tool: "fluid", label: "Fluido", icon: IconWater },
-      { tool: "wall", label: "Parede", icon: IconWall },
-      { tool: "eraser", label: "Borracha", icon: IconEraser },
+    this.toolButtons.clear();
+    const tools: { tool: Tool; icon: string }[] = [
+      { tool: "fluid", icon: IconWater },
+      { tool: "wall", icon: IconWall },
+      { tool: "eraser", icon: IconEraser },
     ];
-    for (const { tool, label, icon } of tools) {
-      const btn = this.iconButton("tool-btn", icon, label);
+    for (const { tool, icon } of tools) {
+      const btn = this.iconButton("tool-btn", icon, t("tool." + tool));
       btn.addEventListener("click", () => {
         this.cb.onTool(tool);
         this.refreshToolButtons();
@@ -117,35 +129,42 @@ export class UI {
 
     // sliders
     const cfg = this.cb.config;
-    const slidersSec = this.section("Ajustes");
+    const slidersSec = this.section(t("section.settings"));
     slidersSec.appendChild(
-      this.slider("Raio do pincel", cfg.splatRadius, 0.05, 1, 0.01, (v) => {
+      this.slider(t("slider.splatRadius"), cfg.splatRadius, 0.05, 1, 0.01, (v) => {
         cfg.splatRadius = v;
       })
     );
     slidersSec.appendChild(
-      this.slider("Força do pincel", cfg.splatForce, 1000, 15000, 100, (v) => {
+      this.slider(t("slider.splatForce"), cfg.splatForce, 1000, 15000, 100, (v) => {
         cfg.splatForce = v;
       })
     );
     slidersSec.appendChild(
-      this.slider("Vorticidade", cfg.curl, 0, 60, 1, (v) => {
+      this.slider(t("slider.curl"), cfg.curl, 0, 60, 1, (v) => {
         cfg.curl = v;
       })
     );
     slidersSec.appendChild(
-      this.slider("Viscosidade", cfg.viscosity, 0, 0.4, 0.01, (v) => {
+      this.slider(t("slider.viscosity"), cfg.viscosity, 0, 0.4, 0.01, (v) => {
         cfg.viscosity = v;
       })
     );
     slidersSec.appendChild(
-      this.slider("Dissip. corante", cfg.densityDissipation, 0, 4, 0.05, (v) => {
-        cfg.densityDissipation = v;
-      })
+      this.slider(
+        t("slider.densityDissipation"),
+        cfg.densityDissipation,
+        0,
+        4,
+        0.05,
+        (v) => {
+          cfg.densityDissipation = v;
+        }
+      )
     );
     slidersSec.appendChild(
       this.slider(
-        "Dissip. velocidade",
+        t("slider.velocityDissipation"),
         cfg.velocityDissipation,
         0,
         4,
@@ -156,21 +175,21 @@ export class UI {
       )
     );
     slidersSec.appendChild(
-      this.slider("Bloom", cfg.bloom, 0, 1.2, 0.01, (v) => {
+      this.slider(t("slider.bloom"), cfg.bloom, 0, 1.2, 0.01, (v) => {
         cfg.bloom = v;
       })
     );
     panel.appendChild(slidersSec);
 
     // toggles
-    const toggleSec = this.section("Opções");
+    const toggleSec = this.section(t("section.options"));
     toggleSec.appendChild(
-      this.toggle("Gravidade", cfg.gravityEnabled, (on) => {
+      this.toggle(t("toggle.gravity"), cfg.gravityEnabled, (on) => {
         cfg.gravityEnabled = on;
       })
     );
     toggleSec.appendChild(
-      this.toggle("Pausar", cfg.paused, (on) => {
+      this.toggle(t("toggle.pause"), cfg.paused, (on) => {
         cfg.paused = on;
         this.cb.onPauseChange(on);
       })
@@ -178,13 +197,13 @@ export class UI {
     panel.appendChild(toggleSec);
 
     // ações
-    const actionSec = this.section("Ações");
+    const actionSec = this.section(t("section.actions"));
     const actionGrid = this.el("div", "grid cols-2");
-    const randomBtn = this.iconButton("action-btn", IconDice, "Splat");
+    const randomBtn = this.iconButton("action-btn", IconDice, t("action.splat"));
     randomBtn.addEventListener("click", () => this.cb.onRandom());
-    const clearBtn = this.iconButton("action-btn", IconClear, "Limpar");
+    const clearBtn = this.iconButton("action-btn", IconClear, t("action.clear"));
     clearBtn.addEventListener("click", () => this.cb.onClear());
-    const resetBtn = this.iconButton("action-btn", IconReset, "Reset");
+    const resetBtn = this.iconButton("action-btn", IconReset, t("action.reset"));
     resetBtn.addEventListener("click", () => this.cb.onReset());
     actionGrid.appendChild(randomBtn);
     actionGrid.appendChild(clearBtn);
@@ -192,12 +211,38 @@ export class UI {
     actionSec.appendChild(actionGrid);
     panel.appendChild(actionSec);
 
+    // idioma
+    const langSec = this.section(t("section.language"));
+    const langGrid = this.el("div", "grid cols-3");
+    for (const { code, label } of LANGS) {
+      const btn = this.iconButton("tool-btn", FLAGS[code], label);
+      btn.classList.toggle("active", code === getLang());
+      btn.addEventListener("click", () => setLang(code));
+      langGrid.appendChild(btn);
+    }
+    langSec.appendChild(langGrid);
+    panel.appendChild(langSec);
+
     // dica
     const hint = this.el("p", "hint");
-    hint.innerHTML =
-      "Arraste no canvas para injetar líquido. A gravidade o faz cair e empoçar; o espaço vazio é ar e não o dissolve. As bordas já são paredes: use a Borracha para abrir passagens nelas ou desenhe novos obstáculos com Parede. " +
-      `<span class="icon icon-inline">${IconMenu}</span> recolhe o painel.`;
+    hint.innerHTML = t("hint", {
+      menu: `<span class="icon icon-inline">${IconMenu}</span>`,
+    });
     panel.appendChild(hint);
+
+    // botão X que recolhe o painel; recriado aqui porque o build limpa o painel
+    const collapse = this.el("button", "collapse-btn") as HTMLButtonElement;
+    collapse.innerHTML = `<span class="icon">${IconClose}</span>`;
+    collapse.setAttribute("aria-label", t("aria.collapsePanel"));
+    collapse.addEventListener("click", () =>
+      document.body.classList.add("panel-hidden")
+    );
+    panel.appendChild(collapse);
+
+    // o botão flutuante fica fora do painel, então só atualizo o rótulo aqui
+    document
+      .getElementById("toggle-panel")
+      ?.setAttribute("aria-label", t("aria.togglePanel"));
 
     this.refreshPresetButtons();
     this.refreshToolButtons();
@@ -267,27 +312,17 @@ export class UI {
       btn.classList.toggle("active", tool === current);
   }
 
-  // refaz os sliders com os valores do preset que acabou de entrar
+  // redesenha o painel (troca de preset ou de idioma)
   rebuild(): void {
     this.build();
   }
 
   private setupToggle(): void {
     const btn = document.getElementById("toggle-panel")!;
-    const panel = document.getElementById("panel")!;
     btn.innerHTML = `<span class="icon">${IconMenu}</span>`;
     btn.addEventListener("click", () =>
       document.body.classList.remove("panel-hidden")
     );
-    // o X no canto do painel pra recolher
-    const collapse = this.el("button", "collapse-btn") as HTMLButtonElement;
-    collapse.innerHTML = `<span class="icon">${IconClose}</span>`;
-    collapse.setAttribute("aria-label", "Recolher painel");
-    collapse.addEventListener("click", () =>
-      document.body.classList.add("panel-hidden")
-    );
-    panel.style.position = "fixed";
-    panel.appendChild(collapse);
   }
 
   // gera a cor do splat a partir do preset (matiz aleatória se for multiColor)

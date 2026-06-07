@@ -43,7 +43,6 @@ share it, no server needed.
 - Adjustable vorticity confinement, viscosity, dissipation, and buoyancy.
 - Rendering with fake lighting, specular, emission, bloom, ACES tonemap, vignette.
 - Low-res simulation + high-res dye; resolution adapts to FPS.
-- Clear fallback message when the GPU can't render to float textures.
 
 ## Requirements
 

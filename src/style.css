@@ -135,6 +135,9 @@ body.panel-hidden #panel {
 .grid.cols-2 {
   grid-template-columns: 1fr 1fr;
 }
+.grid.cols-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
 .grid.cols-4 {
   grid-template-columns: repeat(4, 1fr);
 }

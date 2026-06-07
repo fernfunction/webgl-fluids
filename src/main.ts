@@ -1,6 +1,7 @@
 import "./style.css";
 import { applyPreset, defaultConfig } from "./config";
 import { createGLContext, GLInitError } from "./gl-utils";
+import { t } from "./i18n";
 import { InputManager } from "./input";
 import { getPreset } from "./presets";
 import { FluidSimulation } from "./simulation";
@@ -9,7 +10,9 @@ import { UI } from "./ui";
 
 function showUnsupported(message: string): void {
   const el = document.getElementById("unsupported")!;
+  const title = document.querySelector<HTMLHeadingElement>("#unsupported h1")!;
   const msg = document.getElementById("unsupported-msg")!;
+  title.textContent = t("unsupported.title");
   msg.textContent = message;
   el.hidden = false;
 }
@@ -25,7 +28,7 @@ function boot(): void {
   } catch (err) {
     console.error("Erro fatal na inicialização:", err);
     showUnsupported(
-      "Erro ao iniciar a simulação: " + ((err as Error)?.message ?? err)
+      t("error.initFailed", { msg: (err as Error)?.message ?? String(err) })
     );
   }
 }
@@ -39,9 +42,7 @@ function bootInner(): void {
   } catch (err) {
     if (err instanceof GLInitError) showUnsupported(err.message);
     else
-      showUnsupported(
-        "Falha inesperada ao iniciar o WebGL: " + (err as Error).message
-      );
+      showUnsupported(t("error.unexpected", { msg: (err as Error).message }));
     return;
   }
 
@@ -170,7 +171,10 @@ function bootInner(): void {
     fpsTimer += dt;
     if (fpsTimer >= 0.5) {
       const fps = fpsFrames / fpsAccum;
-      fpsEl.textContent = `${Math.round(fps)} FPS · ${currentPreset.name}`;
+      fpsEl.textContent = t("fps", {
+        fps: Math.round(fps),
+        preset: t("preset." + currentPreset.id),
+      });
       maybeAdaptResolution(fps, fpsTimer);
       fpsAccum = 0;
       fpsFrames = 0;

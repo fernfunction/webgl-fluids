@@ -26,10 +26,9 @@ export interface TexFormat {
   format: number;
 }
 
-// um preset de fluido (ver §6 do plano)
+// um preset de fluido (ver §6 do plano); o nome exibido vem do i18n por id
 export interface Preset {
   id: string;
-  name: string;
   // cor base (albedo) em RGB 0..1
   color: [number, number, number];
   // se true, cada splat ganha uma matiz aleatória (tinta)

@@ -1,3 +1,4 @@
+import { t } from "./i18n";
 import type { DoubleFBO, FBO, TexFormat } from "./types";
 
 // o que a GPU consegue fazer, descoberto no init
@@ -50,9 +51,7 @@ export function createGLContext(canvas: HTMLCanvasElement): GLContext {
 
   const gl = canvas.getContext("webgl2", params);
   if (!gl) {
-    throw new GLInitError(
-      "Seu navegador não suporta WebGL2, necessário para a simulação. Tente um navegador atualizado (Chrome, Edge, Firefox ou Safari recentes)."
-    );
+    throw new GLInitError(t("error.webgl2"));
   }
 
   const colorBufferFloat = gl.getExtension("EXT_color_buffer_float");
@@ -66,9 +65,7 @@ export function createGLContext(canvas: HTMLCanvasElement): GLContext {
   );
 
   if (!colorBufferFloat) {
-    throw new GLInitError(
-      "Sua GPU não permite renderizar em texturas de ponto flutuante (EXT_color_buffer_float). A simulação precisa desse recurso para funcionar com qualidade."
-    );
+    throw new GLInitError(t("error.colorBufferFloat"));
   }
 
   const halfFloat = gl.HALF_FLOAT;
@@ -76,9 +73,7 @@ export function createGLContext(canvas: HTMLCanvasElement): GLContext {
   // confere na prática que dá pra renderizar em half-float; tem device que
   // expõe a extensão mas falha na completude do framebuffer
   if (!canRenderToHalfFloat(gl)) {
-    throw new GLInitError(
-      "Sua GPU não conseguiu criar um framebuffer de ponto flutuante (RGBA16F). A simulação não pode rodar neste dispositivo/navegador."
-    );
+    throw new GLInitError(t("error.framebuffer"));
   }
 
   const ctx: GLContext = {

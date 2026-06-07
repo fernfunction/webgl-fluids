@@ -23,7 +23,6 @@ export function hsvToRgb(h: number, s: number, v: number): [number, number, numb
 export const PRESETS: Preset[] = [
   {
     id: "water",
-    name: "Água",
     color: hsvToRgb(190, 0.7, 1.0),
     multiColor: false,
     velocityDissipation: 1.5,
@@ -40,7 +39,6 @@ export const PRESETS: Preset[] = [
   },
   {
     id: "oil",
-    name: "Óleo",
     color: hsvToRgb(35, 0.85, 0.95),
     multiColor: false,
     velocityDissipation: 1.3,
@@ -57,7 +55,6 @@ export const PRESETS: Preset[] = [
   },
   {
     id: "honey",
-    name: "Mel",
     color: hsvToRgb(45, 0.95, 1.0),
     multiColor: false,
     velocityDissipation: 1.6,
@@ -74,7 +71,6 @@ export const PRESETS: Preset[] = [
   },
   {
     id: "ink",
-    name: "Tinta",
     color: hsvToRgb(280, 0.9, 1.0),
     multiColor: true,
     velocityDissipation: 1.1,
@@ -91,7 +87,6 @@ export const PRESETS: Preset[] = [
   },
   {
     id: "smoke",
-    name: "Fumaça",
     color: hsvToRgb(0, 0.0, 0.85),
     multiColor: false,
     velocityDissipation: 0.1,
@@ -108,7 +103,6 @@ export const PRESETS: Preset[] = [
   },
   {
     id: "mercury",
-    name: "Mercúrio",
     color: hsvToRgb(210, 0.05, 0.88),
     multiColor: false,
     velocityDissipation: 1.3,
@@ -125,7 +119,6 @@ export const PRESETS: Preset[] = [
   },
   {
     id: "lava",
-    name: "Lava",
     color: hsvToRgb(15, 0.95, 1.0),
     multiColor: false,
     velocityDissipation: 1.1,
@@ -142,7 +135,6 @@ export const PRESETS: Preset[] = [
   },
   {
     id: "plasma",
-    name: "Plasma",
     color: hsvToRgb(300, 0.9, 1.0),
     multiColor: false,
     velocityDissipation: 0.1,
