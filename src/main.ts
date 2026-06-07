@@ -118,6 +118,18 @@ function bootInner(): void {
 
   // loop principal
   const fpsEl = document.getElementById("fps")!;
+  // span dinâmico (fps/preset) + crédito estático com link pro autor
+  const fpsStat = document.createElement("span");
+  const credit = document.createElement("span");
+  credit.className = "credit";
+  credit.append(" · Davi Viana @");
+  const creditLink = document.createElement("a");
+  creditLink.href = "https://github.com/fernfunction";
+  creditLink.target = "_blank";
+  creditLink.rel = "noopener noreferrer";
+  creditLink.textContent = "fernfunction";
+  credit.append(creditLink);
+  fpsEl.append(fpsStat, credit);
   let lastTime = performance.now();
   let fpsAccum = 0;
   let fpsFrames = 0;
@@ -171,7 +183,7 @@ function bootInner(): void {
     fpsTimer += dt;
     if (fpsTimer >= 0.5) {
       const fps = fpsFrames / fpsAccum;
-      fpsEl.textContent = t("fps", {
+      fpsStat.textContent = t("fps", {
         fps: Math.round(fps),
         preset: t("preset." + currentPreset.id),
       });

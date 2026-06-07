@@ -306,6 +306,15 @@ body.panel-hidden #toggle-panel {
   z-index: 8;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
+/* crédito do autor: o link precisa ser clicável apesar do #fps ignorar o mouse */
+#fps .credit a {
+  color: var(--text-dim);
+  text-decoration: underline;
+  pointer-events: auto;
+}
+#fps .credit a:hover {
+  color: var(--accent);
+}
 
 /* dica */
 .hint {
