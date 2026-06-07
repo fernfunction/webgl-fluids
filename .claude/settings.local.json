@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm -rf /tmp/ffp7)",
+      "Bash(\"/c/Program Files/Firefox Developer Edition/firefox.exe\" -headless -profile \"C:\\\\Users\\\\davia\\\\AppData\\\\Local\\\\Temp\\\\ffp7\" -screenshot \"E:\\\\Git\\\\webgl-fluids\\\\ff-diag3.png\" \"file:///E:/Git/webgl-fluids/diag3.html\" --window-size 1500,820)"
+    ]
+  }
+}
