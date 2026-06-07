@@ -1,5 +1,7 @@
 # Fluid Sandbox · WebGL2
 
+<img width="1918" height="940" alt="image" src="https://github.com/user-attachments/assets/30e49193-12c7-4879-bf3c-18c642b3fe68" />
+
 An interactive, GPU-accelerated fluid simulation sandbox. Inject and push
 liquids around, carve walls, and switch between presets that differ in viscosity
 and albedo. The goal is visual beauty and flow, not physical accuracy.
@@ -7,6 +9,8 @@ and albedo. The goal is visual beauty and flow, not physical accuracy.
 Empty space behaves like **air**: it doesn't dissolve the liquid you apply.
 Gravity is on by default, so liquid falls and pools, and the area's edges start
 out as **walls** you can punch through with the eraser.
+[
+Try it out now here!](https://fernfunction.github.io/webgl-fluids/)
 
 ## Commands
 
