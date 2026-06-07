@@ -1,5 +1,13 @@
 import { PRESETS, hsvToRgb } from "./presets";
 import type { Config, Preset, Tool } from "./types";
+import IconWater from "~icons/mdi/water";
+import IconWall from "~icons/mdi/wall";
+import IconEraser from "~icons/mdi/eraser";
+import IconDice from "~icons/mdi/dice-multiple";
+import IconClear from "~icons/mdi/auto-fix";
+import IconReset from "~icons/mdi/refresh";
+import IconClose from "~icons/mdi/close";
+import IconMenu from "~icons/mdi/menu";
 
 export interface UICallbacks {
   config: Config;
@@ -34,6 +42,16 @@ export class UI {
     if (cls) e.className = cls;
     if (text != null) e.textContent = text;
     return e;
+  }
+
+  // botão com um ícone SVG (string do unplugin) seguido do rótulo
+  private iconButton(cls: string, icon: string, label: string): HTMLButtonElement {
+    const btn = this.el("button", cls) as HTMLButtonElement;
+    const ic = this.el("span", "icon");
+    ic.innerHTML = icon;
+    btn.appendChild(ic);
+    btn.appendChild(document.createTextNode(label));
+    return btn;
   }
 
   private section(label: string): HTMLDivElement {
@@ -80,13 +98,13 @@ export class UI {
     // ferramentas
     const toolSec = this.section("Ferramenta");
     const toolGrid = this.el("div", "grid cols-2");
-    const tools: { tool: Tool; label: string }[] = [
-      { tool: "fluid", label: "💧 Fluido" },
-      { tool: "wall", label: "🧱 Parede" },
-      { tool: "eraser", label: "🧽 Borracha" },
+    const tools: { tool: Tool; label: string; icon: string }[] = [
+      { tool: "fluid", label: "Fluido", icon: IconWater },
+      { tool: "wall", label: "Parede", icon: IconWall },
+      { tool: "eraser", label: "Borracha", icon: IconEraser },
     ];
-    for (const { tool, label } of tools) {
-      const btn = this.el("button", "tool-btn", label) as HTMLButtonElement;
+    for (const { tool, label, icon } of tools) {
+      const btn = this.iconButton("tool-btn", icon, label);
       btn.addEventListener("click", () => {
         this.cb.onTool(tool);
         this.refreshToolButtons();
@@ -162,23 +180,11 @@ export class UI {
     // ações
     const actionSec = this.section("Ações");
     const actionGrid = this.el("div", "grid cols-2");
-    const randomBtn = this.el(
-      "button",
-      "action-btn",
-      "🎲 Splat"
-    ) as HTMLButtonElement;
+    const randomBtn = this.iconButton("action-btn", IconDice, "Splat");
     randomBtn.addEventListener("click", () => this.cb.onRandom());
-    const clearBtn = this.el(
-      "button",
-      "action-btn",
-      "✨ Limpar"
-    ) as HTMLButtonElement;
+    const clearBtn = this.iconButton("action-btn", IconClear, "Limpar");
     clearBtn.addEventListener("click", () => this.cb.onClear());
-    const resetBtn = this.el(
-      "button",
-      "action-btn",
-      "♻️ Reset"
-    ) as HTMLButtonElement;
+    const resetBtn = this.iconButton("action-btn", IconReset, "Reset");
     resetBtn.addEventListener("click", () => this.cb.onReset());
     actionGrid.appendChild(randomBtn);
     actionGrid.appendChild(clearBtn);
@@ -187,11 +193,10 @@ export class UI {
     panel.appendChild(actionSec);
 
     // dica
-    const hint = this.el(
-      "p",
-      "hint",
-      "Arraste no canvas para injetar líquido. A gravidade o faz cair e empoçar; o espaço vazio é ar e não o dissolve. As bordas já são paredes: use a Borracha para abrir passagens nelas ou desenhe novos obstáculos com Parede. ☰ recolhe o painel."
-    );
+    const hint = this.el("p", "hint");
+    hint.innerHTML =
+      "Arraste no canvas para injetar líquido. A gravidade o faz cair e empoçar; o espaço vazio é ar e não o dissolve. As bordas já são paredes: use a Borracha para abrir passagens nelas ou desenhe novos obstáculos com Parede. " +
+      `<span class="icon icon-inline">${IconMenu}</span> recolhe o painel.`;
     panel.appendChild(hint);
 
     this.refreshPresetButtons();
@@ -270,14 +275,14 @@ export class UI {
   private setupToggle(): void {
     const btn = document.getElementById("toggle-panel")!;
     const panel = document.getElementById("panel")!;
+    btn.innerHTML = `<span class="icon">${IconMenu}</span>`;
     btn.addEventListener("click", () =>
       document.body.classList.remove("panel-hidden")
     );
-    // o ✕ no canto do painel pra recolher
-    const collapse = this.el("button", undefined, "✕") as HTMLButtonElement;
+    // o X no canto do painel pra recolher
+    const collapse = this.el("button", "collapse-btn") as HTMLButtonElement;
+    collapse.innerHTML = `<span class="icon">${IconClose}</span>`;
     collapse.setAttribute("aria-label", "Recolher painel");
-    collapse.style.cssText =
-      "position:absolute;top:12px;right:12px;background:none;border:none;color:var(--text-dim);font-size:14px;cursor:pointer;";
     collapse.addEventListener("click", () =>
       document.body.classList.add("panel-hidden")
     );

@@ -97,6 +97,36 @@ body.panel-hidden #panel {
   color: var(--text-dim);
 }
 
+/* ícones (svg do unplugin injetado via innerHTML) */
+.icon {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+.icon svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+.icon-inline {
+  vertical-align: -3px;
+}
+
+/* botão X que recolhe o painel */
+.collapse-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 0;
+}
+.collapse-btn:hover {
+  color: var(--text);
+}
+
 /* grids de botões */
 .grid {
   display: grid;
@@ -241,7 +271,9 @@ input[type="range"]::-moz-range-thumb {
   border: 1px solid var(--panel-border);
   background: var(--panel-bg);
   color: var(--text);
-  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   z-index: 9;
   backdrop-filter: blur(14px);
@@ -253,6 +285,10 @@ input[type="range"]::-moz-range-thumb {
 body.panel-hidden #toggle-panel {
   opacity: 1;
   pointer-events: auto;
+}
+#toggle-panel .icon svg {
+  width: 20px;
+  height: 20px;
 }
 
 /* fps */
